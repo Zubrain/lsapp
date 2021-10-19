@@ -20,9 +20,8 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/users/{id}', function($id){
 //     return 'this is user '.$id;
 // });
-Route::get('/', 'PagesController@index');
+Route::get('/','PagesController@index');
+Route::get('/about','PagesController@about');
+Route::get('/services','PagesController@services');
 
-Route::get('/about', function(){
-    return view('pages.about');
-});
 
