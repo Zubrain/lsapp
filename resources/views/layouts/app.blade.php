@@ -5,13 +5,25 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{asset('css/app.css')}}">
         <title>{{config('app.name', 'LSAPP')}}</title>
+        <script src="https://cdn.ckeditor.com/ckeditor5/31.1.0/classic/ckeditor.js"></script>
 
     </head>
     <body>
         @include('inc.navbar')
-        <div class="container">
+        <div class="container p-5">
+            @include('inc.messages')
             @yield('content')
         </div>
-        
+
+        <script>
+            ClassicEditor
+                    .create( document.querySelector( '#editor' ) )
+                    .then( editor => {
+                            console.log( editor );
+                    } )
+                    .catch( error => {
+                            console.error( error );
+                    } );
+        </script>
     </body>
 </html>

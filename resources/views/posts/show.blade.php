@@ -6,7 +6,7 @@
 
 <small>Written on {{$posts->created_at}}</small>
 <div class="well">
-    {{$posts->body}}
+    {!! $posts->body !!}
 </div>
     
 @endsection
