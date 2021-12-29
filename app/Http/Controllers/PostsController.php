@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use DB;
 
@@ -54,13 +55,33 @@ class PostsController extends Controller
     {
         $this->validate($request, [
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'cover_image' => 'image|nullable|max:1999'
         ]);
+
+        //Handle File Upload
+        if ($request->hasFile('cover_image')) {
+            # code...
+            //GET FILENAME with the extension
+            $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+            //Get Just filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            //Get just extension
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+            //Filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            //Upload Image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+        }else{
+            $fileNameToStore = 'noimage.jpg';
+        }
+
         //Create Post
         $post = new Post;
         $post->title = $request->input('title');
         $post->body = $request->input('body');
         $post->user_id = auth()->user()->id;
+        $post->cover_image = $fileNameToStore;
         $post->save();
 
         return redirect('/posts')->with('success', 'Post Created Successfully');
@@ -108,12 +129,33 @@ class PostsController extends Controller
     {
         $this->validate($request, [
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'cover_image' => 'image|nullable|max:1999'
         ]);
+
+        //Handle File Upload
+        if ($request->hasFile('cover_image')) {
+            # code...
+            //GET FILENAME with the extension
+            $filenameWithExt = $request->file('cover_image')->getClientOriginalName();
+            //Get Just filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            //Get just extension
+            $extension = $request->file('cover_image')->getClientOriginalExtension();
+            //Filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            //Upload Image
+            $path = $request->file('cover_image')->storeAs('public/cover_images', $fileNameToStore);
+        }
+
+        
         //Create Post
         $post = Post::find($id);
         $post->title = $request->input('title');
         $post->body = $request->input('body');
+        if ($request->hasFile('cover_image')) {
+            $post->cover_image = $fileNameToStore;
+        }
         $post->save();
 
         return redirect('/posts')->with('success', 'Post Updated');
@@ -133,9 +175,13 @@ class PostsController extends Controller
         if (auth()->user()->id !==  $post->user_id) {
             return redirect('/posts')->with('error', 'Unathorized Page');
         }
-        
-        $post->delete();
 
+        if ($post->cover_image != 'noimage.jpg') {
+            # delete the image...
+            Storage::delete('public/cover_images/'.$post->cover_image);
+        }
+
+        $post->delete();
 
         return redirect('/posts')->with('success', 'Post Deleted');
     }
