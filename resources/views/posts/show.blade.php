@@ -4,7 +4,7 @@
 <a href="/posts" class="btn btn-secondary my-3">Go back </a>
 <h1 class="">{{$post->title}}</h1>
 
-<small>Written on {{$post->created_at}}</small>
+<small>Written on {{$post->created_at}} by {{ $post->user->name }}</small>
 <div class="well">
     {!! $post->body !!}
 </div>
